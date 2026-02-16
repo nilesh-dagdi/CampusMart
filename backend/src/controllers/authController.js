@@ -127,3 +127,94 @@ export const login = async (req, res) => {
         res.status(500).json({ message: 'Server error during login' });
     }
 };
+
+export const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        // 1. Check if user exists
+        const user = await prisma.user.findUnique({
+            where: { email }
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User with this email does not exist' });
+        }
+
+        // 2. Generate OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+        // 3. Clear old OTPs and Save new one
+        await prisma.oTP.deleteMany({
+            where: { email }
+        });
+
+        await prisma.oTP.create({
+            data: {
+                email,
+                otp,
+                expiresAt
+            }
+        });
+
+        // 4. Send Email
+        const sent = await sendEmail(
+            email,
+            'Reset Your Password - CampusMart',
+            `Your OTP for password reset is: ${otp}. It expires in 10 minutes.`
+        );
+
+        if (!sent) {
+            return res.status(500).json({ message: 'Failed to send OTP email. Please try again later.' });
+        }
+
+        res.json({ message: 'OTP sent to your email' });
+    } catch (err) {
+        console.error('Forgot password error:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+export const resetPassword = async (req, res) => {
+    const { email, otp, newPassword } = req.body;
+
+    try {
+        // 1. Verify OTP
+        const otpRecord = await prisma.oTP.findFirst({
+            where: { email }
+        });
+
+        if (!otpRecord || otpRecord.otp !== otp) {
+            return res.status(400).json({ message: 'Invalid OTP' });
+        }
+
+        if (new Date() > otpRecord.expiresAt) {
+            return res.status(400).json({ message: 'OTP expired. Please request a new one.' });
+        }
+
+        // 2. Validate password
+        if (!newPassword || newPassword.length < 6) {
+            return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+        }
+
+        // 3. Update User
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        await prisma.user.update({
+            where: { email },
+            data: { password: hashedPassword }
+        });
+
+        // 4. Delete OTP
+        await prisma.oTP.deleteMany({
+            where: { email }
+        });
+
+        res.json({ message: 'Password reset successful. You can now login with your new password.' });
+    } catch (err) {
+        console.error('Reset password error:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};

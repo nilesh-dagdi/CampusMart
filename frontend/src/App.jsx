@@ -13,6 +13,7 @@ import ProfilePage from './pages/ProfilePage';
 import ItemDetailPage from './pages/ItemDetailPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ScrollToTop from './components/ScrollToTop';
 import SplashScreen from './components/SplashScreen';
 import AuthNotification from './components/AuthNotification';
@@ -65,6 +66,7 @@ function App() {
           <Route path="/" element={<LandingPage isLoggedIn={isLoggedIn} onAuthRequired={() => setShowAuthModal(true)} />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/browse" element={<BrowsePage isLoggedIn={isLoggedIn} onAuthRequired={() => setShowAuthModal(true)} />} />
           <Route path="/my-listings" element={<MyListingsPage />} />
           <Route path="/sell" element={<SellItemPage />} />

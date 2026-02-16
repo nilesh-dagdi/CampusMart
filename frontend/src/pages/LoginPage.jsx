@@ -86,9 +86,9 @@ const LoginPage = () => {
                     </div>
 
                     <div className="flex justify-end px-1">
-                        <button type="button" className="text-sm text-brand-primary hover:text-emerald-400 transition-colors">
+                        <Link to="/forgot-password" size="sm" className="text-sm text-brand-primary hover:text-emerald-400 transition-colors">
                             Forgot Password?
-                        </button>
+                        </Link>
                     </div>
 
                     {error && <p className="text-red-400 text-xs ml-2 animate-pulse">{error}</p>}
