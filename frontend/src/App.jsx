@@ -34,6 +34,16 @@ function App() {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
+  // Force scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+    window.scrollTo(0, 0); // Ensure we're at top after splash
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -52,7 +62,7 @@ function App() {
   return (
     <>
       <ScrollToTop />
-      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+      {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
       <AuthNotification isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
 
       <div className="min-h-screen bg-brand-dark font-sans text-gray-300">
