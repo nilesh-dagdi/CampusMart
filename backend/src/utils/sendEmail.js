@@ -49,7 +49,7 @@ export const sendEmail = async (to, subject, text) => {
             console.log(`Email sent to ${to} via Supabase Proxy`);
             return true;
         } else {
-            console.error('Supabase Email Error:', result.error || 'Unknown error');
+            console.error('Supabase Email Error:', result.error || result || 'Unknown error');
             return false;
         }
     } catch (error) {
