@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // Forgot Password Page - Optimized for CampusMart
 import { Mail, Lock, Key, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { forgotPassword, resetPassword } from '../api/auth';
 
 const ForgotPasswordPage = () => {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     console.log('ForgotPasswordPage rendering');
     const navigate = useNavigate();
     const [step, setStep] = useState(1); // 1: Email, 2: OTP & New Password
