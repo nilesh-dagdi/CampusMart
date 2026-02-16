@@ -85,16 +85,16 @@ const LoginPage = () => {
                         </button>
                     </div>
 
-                    <div className="flex justify-end px-1">
+                    <div className="flex justify-center px-1 pt-2">
                         <button
                             type="button"
                             onClick={() => {
-                                console.log('Forgot Password clicked');
+                                console.log('🔴 FORGOT PASSWORD CLICKED 🔴');
                                 window.location.href = '/forgot-password';
                             }}
-                            className="text-sm text-brand-primary hover:text-emerald-400 transition-colors"
+                            className="text-sm font-bold text-orange-500 hover:text-orange-400 p-3 bg-orange-500/10 rounded-xl border border-orange-500/20 transition-all w-full"
                         >
-                            Forgot Password?
+                            Forgot Password? (Verify v3)
                         </button>
                     </div>
 
