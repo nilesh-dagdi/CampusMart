@@ -1,55 +1,59 @@
 import nodemailer from 'nodemailer';
 
 export const sendEmail = async (to, subject, text) => {
-    // 1. Try Nodemailer (Best for Localhost/Any Email)
-    try {
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
-
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to,
-            subject,
-            text
-        });
-
-        console.log(`Email sent to ${to} via Nodemailer`);
-        return true;
-    } catch (nodemalerError) {
-        console.warn('Nodemailer failed, trying Resend API...', nodemalerError.message);
-
-        // 2. Fallback to Resend API (Best for Production/Cloud)
+    // 1. Try Local Nodemailer First (Works on localhost)
+    if (process.env.NODE_ENV === 'development') {
         try {
-            const response = await fetch('https://api.resend.com/emails', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    from: process.env.EMAIL_FROM || 'CampusMart <onboarding@resend.dev>',
-                    to: [to],
-                    subject: subject,
-                    text: text
-                })
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                }
             });
 
-            if (response.ok) {
-                console.log(`Email sent to ${to} via Resend`);
-                return true;
-            } else {
-                const errorData = await response.json();
-                console.error('Resend error:', errorData);
-                return false;
-            }
-        } catch (resendError) {
-            console.error('Both Email methods failed:', resendError.message);
+            await transporter.sendMail({
+                from: process.env.EMAIL_USER,
+                to,
+                subject,
+                text
+            });
+            console.log(`Email sent to ${to} via Local Nodemailer`);
+            return true;
+        } catch (err) {
+            console.warn('Local Nodemailer failed:', err.message);
+        }
+    }
+
+    // 2. Try Supabase Edge Function (Works on Render/Production)
+    // This acts as a proxy to bypass Render's SMTP blocks
+    try {
+        const SUPABASE_URL = process.env.SUPABASE_URL; // e.g., https://xyz.supabase.co
+        const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+
+        if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+            throw new Error('Supabase credentials missing in .env');
+        }
+
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/send-otp`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            },
+            body: JSON.stringify({ to, subject, text })
+        });
+
+        const result = await response.json();
+        if (response.ok && result.success) {
+            console.log(`Email sent to ${to} via Supabase Proxy`);
+            return true;
+        } else {
+            console.error('Supabase Email Error:', result.error || 'Unknown error');
             return false;
         }
+    } catch (error) {
+        console.error('All email methods failed:', error.message);
+        return false;
     }
 };
