@@ -26,8 +26,17 @@ export const signup = async (req, res) => {
             return res.status(400).json({ message: 'OTP expired. Please request a new one.' });
         }
 
-        // 1. Validate email
-        if (!email.endsWith('@rtu.ac.in')) {
+        // 1. Validate inputs
+        if (!name || name.trim().length < 3) {
+            return res.status(400).json({ message: 'Name must be at least 3 characters long' });
+        }
+
+        const mobileRegex = /^[0-9]{10}$/;
+        if (!mobile || !mobileRegex.test(mobile)) {
+            return res.status(400).json({ message: 'Mobile number must be exactly 10 digits' });
+        }
+
+        if (!email || !email.endsWith('@rtu.ac.in')) {
             return res.status(400).json({ message: 'Only @rtu.ac.in emails are allowed' });
         }
 

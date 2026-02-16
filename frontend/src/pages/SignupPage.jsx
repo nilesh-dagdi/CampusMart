@@ -62,6 +62,18 @@ const SignupPage = () => {
             setError('Please fill in all fields including a password');
             return;
         }
+
+        if (formData.name.trim().length < 3) {
+            setError('Name must be at least 3 characters long');
+            return;
+        }
+
+        const mobileRegex = /^[0-9]{10}$/;
+        if (!mobileRegex.test(formData.mobile)) {
+            setError('Mobile number must be exactly 10 digits');
+            return;
+        }
+
         if (formData.password.length < 6) {
             setError('Password must be at least 6 characters long');
             return;

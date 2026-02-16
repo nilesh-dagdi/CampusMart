@@ -88,6 +88,23 @@ const EditItemPage = () => {
 
     const handleSave = async (e) => {
         e.preventDefault();
+
+        // Validations
+        if (formData.title.trim().length < 5) {
+            setError('Title must be at least 5 characters long');
+            return;
+        }
+
+        if (formData.description.trim().length < 10) {
+            setError('Description must be at least 10 characters long');
+            return;
+        }
+
+        if (parseFloat(formData.price) <= 0) {
+            setError('Price must be a positive number');
+            return;
+        }
+
         setSaving(true);
         setError('');
 

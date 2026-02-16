@@ -56,6 +56,17 @@ export const createItem = async (req, res) => {
     const { title, description, price, category, condition, image } = req.body;
     const sellerId = req.user.id;
 
+    // Validations
+    if (!title || title.trim().length < 5) {
+        return res.status(400).json({ message: 'Title must be at least 5 characters long' });
+    }
+    if (!description || description.trim().length < 10) {
+        return res.status(400).json({ message: 'Description must be at least 10 characters long' });
+    }
+    if (isNaN(price) || price <= 0) {
+        return res.status(400).json({ message: 'Price must be a positive number' });
+    }
+
     try {
         const newItem = await prisma.item.create({
             data: {
@@ -76,9 +87,20 @@ export const createItem = async (req, res) => {
 };
 
 export const updateItem = async (req, res) => {
-    const { title, description, price, category, condition, image } = req.body;
+    const { title, description, price, category, condition, image, status } = req.body;
     const itemId = req.params.id;
     const sellerId = req.user.id;
+
+    // Validations
+    if (title && title.trim().length < 5) {
+        return res.status(400).json({ message: 'Title must be at least 5 characters long' });
+    }
+    if (description && description.trim().length < 10) {
+        return res.status(400).json({ message: 'Description must be at least 10 characters long' });
+    }
+    if (price !== undefined && (isNaN(price) || price <= 0)) {
+        return res.status(400).json({ message: 'Price must be a positive number' });
+    }
 
     try {
         // Check ownership
