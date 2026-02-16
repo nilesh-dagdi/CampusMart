@@ -1,33 +1,27 @@
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // use STARTTLS
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    },
-    connectionTimeout: 10000, // 10 seconds
-    greetingTimeout: 10000,
-    socketTimeout: 10000
-});
-
 export const sendEmail = async (to, subject, text) => {
     try {
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to,
-            subject,
-            text
-        };
+        const response = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                from: 'CampusMart <onboarding@resend.dev>',
+                to: [to],
+                subject: subject,
+                text: text
+            })
+        });
 
-        await transporter.sendMail(mailOptions);
-        console.log(`Email sent to ${to}`);
-        return true;
+        if (response.ok) {
+            console.log(`Email sent to ${to} via Resend`);
+            return true;
+        } else {
+            const error = await response.json();
+            console.error('Resend error:', error);
+            return false;
+        }
     } catch (error) {
         console.error('Error sending email:', error);
         return false;
