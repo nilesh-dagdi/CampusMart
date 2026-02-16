@@ -9,48 +9,46 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  year      String?
-  mobile    String?
-  password  String
-  listings  Item[]
-  wishlist  WishlistItem[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  purchases Purchase[] @relation("Buyer")
-  sales     Purchase[] @relation("Seller")
-  sentMessages Message[] @relation("SentMessages")
-  receivedMessages Message[] @relation("ReceivedMessages")
+  id               String         @id @default(uuid())
+  email            String         @unique
+  name             String?
+  year             String?
+  mobile           String?
+  password         String
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  listings         Item[]
+  receivedMessages Message[]      @relation("ReceivedMessages")
+  sentMessages     Message[]      @relation("SentMessages")
+  purchases        Purchase[]     @relation("Buyer")
+  sales            Purchase[]     @relation("Seller")
+  wishlist         WishlistItem[]
 }
 
 model Item {
-  id          String   @id @default(uuid())
+  id          String      @id @default(uuid())
   title       String
   description String?
   price       Float
   category    String
   condition   String
-  status      String   @default("AVAILABLE") // AVAILABLE, SOLD, PENDING
   image       String?
-  Purchase    Purchase[]
+  sellerId    String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  status      String      @default("AVAILABLE")
+  seller      User        @relation(fields: [sellerId], references: [id])
   images      ItemImage[]
   messages    Message[]
-  wishlists   WishlistItem[]
-  sellerId    String
-  seller      User     @relation(fields: [sellerId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  Purchase    Purchase[]
 }
 
 model WishlistItem {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   itemId    String
-  item      Item     @relation(fields: [itemId], references: [id])
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, itemId])
 }
@@ -66,32 +64,32 @@ model OTP {
 model Purchase {
   id        String   @id @default(uuid())
   itemId    String
-  item      Item     @relation(fields: [itemId], references: [id])
   buyerId   String
-  buyer     User     @relation("Buyer", fields: [buyerId], references: [id])
   sellerId  String
-  seller    User     @relation("Seller", fields: [sellerId], references: [id])
-  status    String   @default("PENDING") // PENDING, COMPLETED, CANCELLED
+  status    String   @default("PENDING")
   createdAt DateTime @default(now())
+  buyer     User     @relation("Buyer", fields: [buyerId], references: [id])
+  item      Item     @relation(fields: [itemId], references: [id])
+  seller    User     @relation("Seller", fields: [sellerId], references: [id])
 }
 
 model Message {
   id         String   @id @default(uuid())
   senderId   String
-  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
   receiverId String
-  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
   itemId     String
-  item       Item     @relation(fields: [itemId], references: [id])
   content    String
   read       Boolean  @default(false)
   createdAt  DateTime @default(now())
+  item       Item     @relation(fields: [itemId], references: [id])
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
 }
 
 model ItemImage {
   id        String   @id @default(uuid())
   itemId    String
-  item      Item     @relation(fields: [itemId], references: [id])
   url       String
   createdAt DateTime @default(now())
+  item      Item     @relation(fields: [itemId], references: [id])
 }

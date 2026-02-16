@@ -15,9 +15,6 @@ export const initiatePurchase = async (req, res) => {
             return res.status(404).json({ message: 'Item not found' });
         }
 
-        if (item.status !== 'AVAILABLE') {
-            return res.status(400).json({ message: 'Item is no longer available' });
-        }
 
         if (item.sellerId === buyerId) {
             return res.status(400).json({ message: 'Cannot buy your own item' });
@@ -41,12 +38,6 @@ export const initiatePurchase = async (req, res) => {
                     }
                 }
             }
-        });
-
-        // Optionally, update item status to PENDING so others can't buy it immediately
-        await prisma.item.update({
-            where: { id: itemId },
-            data: { status: 'PENDING' }
         });
 
         res.status(201).json(purchase);
@@ -92,12 +83,6 @@ export const confirmPurchase = async (req, res) => {
                     }
                 }
             }
-        });
-
-        // Update item status
-        await prisma.item.update({
-            where: { id: purchase.itemId },
-            data: { status: 'SOLD' }
         });
 
         res.json(completedPurchase);
