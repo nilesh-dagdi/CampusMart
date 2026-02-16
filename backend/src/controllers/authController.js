@@ -36,7 +36,9 @@ export const signup = async (req, res) => {
             return res.status(400).json({ message: 'Mobile number must be exactly 10 digits' });
         }
 
-        if (!email || !email.endsWith('@rtu.ac.in')) {
+        const isDev = process.env.NODE_ENV === 'development';
+
+        if (!email || (!email.endsWith('@rtu.ac.in') && !isDev)) {
             return res.status(400).json({ message: 'Only @rtu.ac.in emails are allowed' });
         }
 

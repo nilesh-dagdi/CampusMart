@@ -23,7 +23,8 @@ const SignupPage = () => {
         if (e) e.preventDefault();
         if (loading) return; // Prevent double clicks
 
-        if (!email.endsWith('@rtu.ac.in')) {
+        const isLocal = window.location.hostname === 'localhost';
+        if (!email.endsWith('@rtu.ac.in') && !isLocal) {
             setError('Please use your official college email (@rtu.ac.in)');
             return;
         }
