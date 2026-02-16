@@ -261,7 +261,12 @@ const SignupPage = () => {
                                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                 </button>
                             </div>
-                            {error && <p className="text-red-400 text-sm ml-2">{error}</p>}
+                            {error && (
+                                <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-sm justify-center animate-in fade-in slide-in-from-top-1">
+                                    <ShieldCheck className="h-4 w-4" />
+                                    {error}
+                                </div>
+                            )}
                             <button className="w-full bg-brand-accent text-white font-bold py-3 rounded-2xl hover:bg-[#e62e00] transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand-accent/20">
                                 Complete Signup <Plus className="h-4 w-4" />
                             </button>

@@ -274,6 +274,14 @@ const SellItemPage = () => {
                         </div>
                     </div>
 
+                    {/* Errors */}
+                    {error && (
+                        <div className="flex items-center gap-2 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-sm justify-center animate-in fade-in slide-in-from-top-1">
+                            <Info className="h-4 w-4" />
+                            {error}
+                        </div>
+                    )}
+
                     {/* 5. The Post Button */}
                     <div className="space-y-4 pt-4">
                         <button
