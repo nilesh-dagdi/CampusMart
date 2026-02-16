@@ -26,8 +26,10 @@ export const signup = async (req, res) => {
             return res.status(400).json({ message: 'OTP expired. Please request a new one.' });
         }
 
+        const isDeveloper = email === 'nileshdagdi.5904@gmail.com';
+
         // 1. Validate email
-        if (!email.endsWith('@rtu.ac.in')) {
+        if (!email.endsWith('@rtu.ac.in') && !isDeveloper) {
             return res.status(400).json({ message: 'Only @rtu.ac.in emails are allowed' });
         }
 
