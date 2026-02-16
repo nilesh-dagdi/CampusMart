@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { forgotPassword, resetPassword } from '../api/auth';
 
 const ForgotPasswordPage = () => {
+    console.log('ForgotPasswordPage rendering');
     const navigate = useNavigate();
     const [step, setStep] = useState(1); // 1: Email, 2: OTP & New Password
     const [email, setEmail] = useState('');

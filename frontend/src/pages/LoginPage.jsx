@@ -88,7 +88,10 @@ const LoginPage = () => {
                     <div className="flex justify-end px-1">
                         <button
                             type="button"
-                            onClick={() => navigate('/forgot-password')}
+                            onClick={() => {
+                                console.log('Forgot Password clicked');
+                                window.location.href = '/forgot-password';
+                            }}
                             className="text-sm text-brand-primary hover:text-emerald-400 transition-colors"
                         >
                             Forgot Password?
