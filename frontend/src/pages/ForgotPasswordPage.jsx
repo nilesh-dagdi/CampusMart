@@ -1,4 +1,5 @@
 import { useState } from 'react';
+// Forgot Password Page - Optimized for CampusMart
 import { Mail, Lock, Key, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { forgotPassword, resetPassword } from '../api/auth';
