@@ -86,9 +86,13 @@ const LoginPage = () => {
                     </div>
 
                     <div className="flex justify-end px-1">
-                        <Link to="/forgot-password" size="sm" className="text-sm text-brand-primary hover:text-emerald-400 transition-colors">
+                        <button
+                            type="button"
+                            onClick={() => navigate('/forgot-password')}
+                            className="text-sm text-brand-primary hover:text-emerald-400 transition-colors"
+                        >
                             Forgot Password?
-                        </Link>
+                        </button>
                     </div>
 
                     {error && <p className="text-red-400 text-xs ml-2 animate-pulse">{error}</p>}
