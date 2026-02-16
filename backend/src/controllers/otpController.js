@@ -6,9 +6,7 @@ import { sendEmail } from '../utils/sendEmail.js';
 export const sendOtp = async (req, res) => {
     const { email } = req.body;
 
-    const isDeveloper = email === 'nileshdagdi.5904@gmail.com';
-
-    if (!email || (!email.endsWith('@rtu.ac.in') && !isDeveloper)) {
+    if (!email || !email.endsWith('@rtu.ac.in')) {
         return res.status(400).json({ message: 'Valid @rtu.ac.in email required' });
     }
 

@@ -7,7 +7,7 @@ export const sendEmail = async (to, subject, text) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                from: 'CampusMart <onboarding@resend.dev>',
+                from: process.env.EMAIL_FROM || 'CampusMart <onboarding@resend.dev>',
                 to: [to],
                 subject: subject,
                 text: text
@@ -18,8 +18,8 @@ export const sendEmail = async (to, subject, text) => {
             console.log(`Email sent to ${to} via Resend`);
             return true;
         } else {
-            const error = await response.json();
-            console.error('Resend error:', error);
+            const errorData = await response.json();
+            console.error('Resend error:', errorData);
             return false;
         }
     } catch (error) {
