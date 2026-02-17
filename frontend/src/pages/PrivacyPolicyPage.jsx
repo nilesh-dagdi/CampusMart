@@ -73,11 +73,7 @@ const PrivacyPolicyPage = () => {
                             </section>
                         </div>
 
-                        <div className="pt-8 border-t border-white/10 text-center">
-                            <p className="text-gray-500 text-sm">
-                                Privacy concerns? Contact us at <span className="text-brand-primary font-bold">nilesh312213@gmail.com</span>
-                            </p>
-                        </div>
+
                     </div>
                 </div>
             </div>
