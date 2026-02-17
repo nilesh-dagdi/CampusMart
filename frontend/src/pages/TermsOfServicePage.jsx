@@ -1,5 +1,4 @@
 import { FileText, Shield, UserCheck, AlertCircle, Scale } from 'lucide-react';
-import Footer from '../components/Footer';
 
 const TermsOfServicePage = () => {
     return (
@@ -87,7 +86,6 @@ const TermsOfServicePage = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
         </div>
     );
 };

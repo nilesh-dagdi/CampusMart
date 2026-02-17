@@ -1,5 +1,4 @@
 import { ShieldCheck, Lock, Eye, Mail, Database, UserCheck } from 'lucide-react';
-import Footer from '../components/Footer';
 
 const PrivacyPolicyPage = () => {
     return (
@@ -81,7 +80,6 @@ const PrivacyPolicyPage = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
         </div>
     );
 };
