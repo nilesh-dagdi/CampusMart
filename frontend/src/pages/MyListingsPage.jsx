@@ -11,7 +11,8 @@ import {
     AlertCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getItems, deleteItem, updateItem } from '../api/items';
+import { getMyListings, updateItem, deleteItem } from '../api/items';
+import Skeleton from '../components/Skeleton';
 
 const MyListingsPage = () => {
     const [listings, setListings] = useState([]);
@@ -29,7 +30,7 @@ const MyListingsPage = () => {
                     setLoading(false);
                     return;
                 }
-                const data = await getItems({ sellerId: user.id });
+                const data = await getMyListings({ sellerId: user.id });
                 setListings(data);
             } catch (err) {
                 console.error('Fetch listings error:', err);
@@ -68,16 +69,23 @@ const MyListingsPage = () => {
         }
     };
 
-    const deleteListing = async (id) => {
-        if (window.confirm("Are you sure you want to remove this listing entirely?")) {
-            try {
-                await deleteItem(id);
-                setListings(prev => prev.filter(item => item.id !== id));
-            } catch (err) {
-                console.error('Delete error:', err);
-                alert('Failed to delete item. Please try again.');
-            }
+    const handleDelete = async (id) => {
+        if (!window.confirm("Delete this listing permanently?")) return;
+        try {
+            await deleteItem(id);
+            setListings(prev => prev.filter(item => item.id !== id));
+        } catch (err) {
+            console.error('Delete error:', err);
+            alert('Failed to delete item.');
         }
+    };
+
+    const optimizeImage = (url) => {
+        if (!url || !url.includes('cloudinary.com')) return url;
+        if (url.includes('/upload/')) {
+            return url.replace('/upload/', '/upload/q_auto,f_auto,w_400/');
+        }
+        return url;
     };
 
     return (
@@ -106,8 +114,23 @@ const MyListingsPage = () => {
 
                 {/* Loading State */}
                 {loading && (
-                    <div className="flex items-center justify-center py-40">
-                        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-brand-primary"></div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="bg-brand-surface border border-white/5 rounded-3xl overflow-hidden p-6 flex flex-col gap-6">
+                                <div className="flex gap-6">
+                                    <Skeleton className="h-24 w-24 rounded-2xl flex-shrink-0" />
+                                    <div className="flex-1 space-y-3">
+                                        <Skeleton className="h-4 w-1/4 rounded" />
+                                        <Skeleton className="h-6 w-3/4 rounded" />
+                                        <Skeleton className="h-5 w-1/3 rounded" />
+                                    </div>
+                                </div>
+                                <div className="flex gap-4 border-t border-white/5 pt-6">
+                                    <Skeleton className="h-12 flex-1 rounded-2xl" />
+                                    <Skeleton className="h-12 w-12 rounded-2xl" />
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 )}
 
@@ -159,7 +182,7 @@ const MyListingsPage = () => {
                                         {/* Thumbnail */}
                                         <div className="relative h-24 w-24 lg:h-32 lg:w-32 rounded-2xl overflow-hidden flex-shrink-0 bg-brand-dark border border-white/5">
                                             <img
-                                                src={item.image}
+                                                src={optimizeImage(item.image)}
                                                 alt={item.title}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                             />

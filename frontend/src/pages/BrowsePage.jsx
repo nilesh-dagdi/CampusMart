@@ -21,6 +21,7 @@ import {
 import { Link } from 'react-router-dom';
 import { getItems } from '../api/items';
 import { getWishlist, addToWishlist, removeFromWishlist } from '../api/wishlist';
+import Skeleton from '../components/Skeleton';
 
 const CATEGORIES = [
     { name: "Academic", icon: BookOpen },
@@ -106,6 +107,15 @@ const BrowsePage = ({ isLoggedIn, onAuthRequired }) => {
         if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
         if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
         return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    };
+
+    const optimizeImage = (url) => {
+        if (!url || !url.includes('cloudinary.com')) return url;
+        // Add auto quality and fetch format, and set width to 400 for thumbnails
+        if (url.includes('/upload/')) {
+            return url.replace('/upload/', '/upload/q_auto,f_auto,w_400/');
+        }
+        return url;
     };
 
     return (
@@ -232,8 +242,20 @@ const BrowsePage = ({ isLoggedIn, onAuthRequired }) => {
 
                         {/* Product Grid */}
                         {loading ? (
-                            <div className="flex items-center justify-center py-20">
-                                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
+                            <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 lg:gap-6">
+                                {[1, 2, 3, 4, 5, 6].map(i => (
+                                    <div key={i} className="bg-brand-surface border border-white/5 rounded-2xl lg:rounded-3xl overflow-hidden p-3 lg:p-5 flex flex-col gap-4">
+                                        <Skeleton className="aspect-square lg:aspect-[4/3] w-full rounded-xl lg:rounded-2xl" />
+                                        <div className="space-y-3">
+                                            <Skeleton className="h-4 w-1/4 rounded" />
+                                            <Skeleton className="h-6 w-full rounded" />
+                                            <div className="flex justify-between items-center pt-4 border-t border-white/5">
+                                                <Skeleton className="h-4 w-1/3 rounded" />
+                                                <Skeleton className="h-4 w-1/4 rounded" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         ) : error ? (
                             <div className="py-20 text-center bg-brand-surface border border-red-500/20 rounded-[40px] px-8">
@@ -256,7 +278,7 @@ const BrowsePage = ({ isLoggedIn, onAuthRequired }) => {
                                         <div className="relative aspect-square lg:aspect-[4/3] overflow-hidden">
                                             <Link to={`/item/${product.id}`} className="block h-full w-full">
                                                 <img
-                                                    src={product.image}
+                                                    src={optimizeImage(product.image)}
                                                     alt={product.title}
                                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                                 />

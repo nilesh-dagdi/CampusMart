@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getWishlist, removeFromWishlist, addToWishlist } from '../api/wishlist';
+import Skeleton from '../components/Skeleton';
 
 const WishlistPage = () => {
     const [wishlist, setWishlist] = useState([]);
@@ -77,6 +78,14 @@ const WishlistPage = () => {
         }
     };
 
+    const optimizeImage = (url) => {
+        if (!url || !url.includes('cloudinary.com')) return url;
+        if (url.includes('/upload/')) {
+            return url.replace('/upload/', '/upload/q_auto,f_auto,w_400/');
+        }
+        return url;
+    };
+
     return (
         <div className="min-h-screen bg-brand-dark pt-8 pb-20">
             {/* Undo Notification */}
@@ -118,8 +127,20 @@ const WishlistPage = () => {
                 </div>
 
                 {loading ? (
-                    <div className="flex items-center justify-center py-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
+                    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
+                        {[1, 2, 3, 4].map(i => (
+                            <div key={i} className="bg-brand-surface border border-white/5 rounded-[28px] overflow-hidden p-4 flex flex-col gap-4">
+                                <Skeleton className="aspect-square w-full rounded-2xl" />
+                                <div className="space-y-3">
+                                    <Skeleton className="h-4 w-1/3 rounded" />
+                                    <Skeleton className="h-6 w-full rounded" />
+                                    <div className="flex justify-between items-center pt-4 border-t border-white/5">
+                                        <Skeleton className="h-5 w-1/2 rounded" />
+                                        <Skeleton className="h-4 w-4 rounded" />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 ) : error ? (
                     <div className="py-20 text-center bg-brand-surface border border-red-500/20 rounded-[40px] px-8">
@@ -140,7 +161,7 @@ const WishlistPage = () => {
                                 <div className="relative aspect-square overflow-hidden">
                                     <Link to={`/item/${item.id}`} className="block h-full w-full">
                                         <img
-                                            src={item.image}
+                                            src={optimizeImage(item.image)}
                                             alt={item.title}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
