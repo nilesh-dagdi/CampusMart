@@ -1,5 +1,6 @@
 import { ShieldCheck, Lock, Eye, Mail, Database, UserCheck } from 'lucide-react';
 
+// Test: Verifying auto-deploy works
 const PrivacyPolicyPage = () => {
     return (
         <div className="min-h-screen flex flex-col bg-brand-dark">
