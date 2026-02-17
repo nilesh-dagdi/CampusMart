@@ -11,26 +11,26 @@ import {
     AlertCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getMyListings, updateItem, deleteItem } from '../api/items';
+import { getItems, updateItem, deleteItem } from '../api/items';
 import Skeleton from '../components/Skeleton';
 
 const MyListingsPage = () => {
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
     const [updatingId, setUpdatingId] = useState(null);
 
     useEffect(() => {
-        const fetchMyListings = async () => {
+        const fetchListings = async () => {
             setLoading(true);
             try {
                 const user = JSON.parse(localStorage.getItem('user') || '{}');
-                if (!user.id) {
+                if (!user?.id) {
                     setError('Please log in to view your listings.');
                     setLoading(false);
                     return;
                 }
-                const data = await getMyListings({ sellerId: user.id });
+                const data = await getItems({ sellerId: user.id });
                 setListings(data);
             } catch (err) {
                 console.error('Fetch listings error:', err);
