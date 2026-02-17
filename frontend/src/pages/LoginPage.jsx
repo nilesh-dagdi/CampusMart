@@ -94,7 +94,7 @@ const LoginPage = () => {
                             }}
                             className="text-sm font-bold text-orange-500 hover:text-orange-400 p-3 bg-orange-500/10 rounded-xl border border-orange-500/20 transition-all w-full"
                         >
-                            🔑 Forgot Password? (v4-FINAL)
+                            Forgot Password?
                         </button>
                     </div>
 

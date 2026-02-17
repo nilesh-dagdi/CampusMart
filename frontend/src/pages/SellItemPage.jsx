@@ -286,10 +286,17 @@ const SellItemPage = () => {
                     <div className="space-y-4 pt-4">
                         <button
                             type="submit"
-                            className="w-full bg-brand-primary text-brand-dark font-black text-xl py-5 rounded-[28px] hover:bg-emerald-400 transition-all shadow-2xl shadow-brand-primary/20 flex items-center justify-center gap-2 group overflow-hidden relative"
+                            disabled={loading}
+                            className="w-full bg-brand-primary text-brand-dark font-black text-xl py-5 rounded-[28px] hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-2xl shadow-brand-primary/20 flex items-center justify-center gap-2 group overflow-hidden relative"
                         >
-                            <span className="relative z-10">Post My Listing</span>
-                            <CheckCircle2 className="relative z-10 h-6 w-6 group-hover:scale-110 transition-transform" />
+                            {loading ? (
+                                <div className="h-6 w-6 border-4 border-brand-dark/30 border-t-brand-dark rounded-full animate-spin"></div>
+                            ) : (
+                                <>
+                                    <span className="relative z-10">Post My Listing</span>
+                                    <CheckCircle2 className="relative z-10 h-6 w-6 group-hover:scale-110 transition-transform" />
+                                </>
+                            )}
                             <div className="absolute inset-x-0 bottom-0 h-1 bg-black/10 group-hover:h-full transition-all duration-300 pointer-events-none opacity-0 group-hover:opacity-10"></div>
                         </button>
 

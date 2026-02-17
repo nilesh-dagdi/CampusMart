@@ -119,7 +119,8 @@ export const updateItem = async (req, res) => {
                 price: parseFloat(price),
                 category,
                 condition,
-                image
+                image,
+                status
             }
         });
         res.json(updatedItem);

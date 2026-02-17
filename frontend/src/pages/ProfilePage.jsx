@@ -11,7 +11,7 @@ import {
     Home,
     TextQuote,
     Lock,
-    Bell,
+
     LogOut,
     Trash2,
     CheckCircle2,
@@ -45,10 +45,7 @@ const ProfilePage = () => {
     const [loading, setLoading] = useState(true);
     const [tempValue, setTempValue] = useState("");
 
-    const [settings, setSettings] = useState({
-        emailNotifications: true,
-        smsNotifications: false
-    });
+
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -400,20 +397,7 @@ const ProfilePage = () => {
                                 <Pencil className="h-4 w-4 text-gray-700 group-hover:text-gray-400 transition-colors" />
                             </button>
 
-                            <div className="p-4 rounded-2xl bg-brand-dark border border-white/5 space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <Bell className="h-5 w-5 text-gray-500" />
-                                        <span className="text-white font-medium">Email Notifications</span>
-                                    </div>
-                                    <button
-                                        onClick={() => setSettings(s => ({ ...s, emailNotifications: !s.emailNotifications }))}
-                                        className={`w-12 h-6 rounded-full transition-all relative ${settings.emailNotifications ? 'bg-brand-primary' : 'bg-gray-700'}`}
-                                    >
-                                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${settings.emailNotifications ? 'left-7' : 'left-1'}`}></div>
-                                    </button>
-                                </div>
-                            </div>
+
                         </div>
                     </div>
 

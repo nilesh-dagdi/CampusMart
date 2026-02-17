@@ -17,6 +17,7 @@ const MyListingsPage = () => {
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [updatingId, setUpdatingId] = useState(null);
 
     useEffect(() => {
         const fetchMyListings = async () => {
@@ -43,8 +44,11 @@ const MyListingsPage = () => {
     const activeCount = listings.filter(item => item.status === "AVAILABLE").length;
 
     const toggleSold = async (id) => {
+        if (updatingId) return; // Prevent double clicks
         const itemToToggle = listings.find(item => item.id === id);
         if (!itemToToggle) return;
+
+        setUpdatingId(id);
 
         const newStatus = itemToToggle.status === 'AVAILABLE' ? 'SOLD' : 'AVAILABLE';
 
@@ -59,6 +63,8 @@ const MyListingsPage = () => {
         } catch (err) {
             console.error('Toggle sold error:', err);
             alert('Failed to update status.');
+        } finally {
+            setUpdatingId(null);
         }
     };
 
@@ -188,11 +194,16 @@ const MyListingsPage = () => {
                                         <div className="flex items-center gap-3 lg:gap-4 flex-wrap justify-center">
                                             <button
                                                 onClick={() => toggleSold(item.id)}
+                                                disabled={updatingId === item.id}
                                                 className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-bold transition-all ${item.status === 'SOLD'
                                                     ? 'bg-white/5 text-white hover:bg-white/10'
-                                                    : 'bg-emerald-500 text-brand-dark hover:bg-emerald-400 shadow-lg shadow-emerald-500/20'}`}
+                                                    : 'bg-emerald-500 text-brand-dark hover:bg-emerald-400 shadow-lg shadow-emerald-500/20'} ${updatingId === item.id ? 'opacity-50 cursor-not-allowed' : ''}`}
                                             >
-                                                <CheckCircle2 className="h-5 w-5" />
+                                                {updatingId === item.id ? (
+                                                    <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                                ) : (
+                                                    <CheckCircle2 className="h-5 w-5" />
+                                                )}
                                                 {item.status === 'SOLD' ? "Mark Active" : "Mark as Sold"}
                                             </button>
 
