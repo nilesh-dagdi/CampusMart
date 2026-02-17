@@ -12,7 +12,6 @@ const Footer = ({ onSellClick }) => {
                         <h3 className="text-white text-lg font-bold mb-4">CampusMart</h3>
                         <p className="text-gray-400 text-sm mb-4 max-w-md">
                             The exclusive marketplace for students. Buy, sell, and trade safely within your campus community.
-                            Built by students of the CS Dept.
                         </p>
                         <div className="flex space-x-4">
                             <a
