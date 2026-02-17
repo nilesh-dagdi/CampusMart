@@ -40,4 +40,14 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+
+    // Self-ping to keep Render awake (every 14 minutes)
+    if (process.env.RENDER_EXTERNAL_URL) {
+        const interval = 14 * 60 * 1000; // 14 minutes
+        setInterval(() => {
+            fetch(process.env.RENDER_EXTERNAL_URL)
+                .then(() => console.log('Keep-alive ping sent.'))
+                .catch(err => console.error('Keep-alive ping failed', err));
+        }, interval);
+    }
 });
