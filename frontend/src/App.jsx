@@ -41,7 +41,6 @@ function App() {
 
   const handleSplashComplete = () => {
     setShowSplash(false);
-    window.scrollTo(0, 0); // Ensure we're at top after splash
   };
 
   const handleLogout = () => {
