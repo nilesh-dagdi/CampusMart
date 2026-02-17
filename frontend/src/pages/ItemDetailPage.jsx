@@ -34,6 +34,7 @@ const ItemDetailPage = ({ isLoggedIn, onAuthRequired }) => {
     const [toast, setToast] = useState({ show: false, message: "" });
     const [showLoginMsg, setShowLoginMsg] = useState(false);
     const [interestSent, setInterestSent] = useState(false);
+    const [contactLoading, setContactLoading] = useState(false);
 
     useEffect(() => {
         const fetchItem = async () => {
@@ -96,6 +97,7 @@ const ItemDetailPage = ({ isLoggedIn, onAuthRequired }) => {
             return;
         }
 
+        setContactLoading(true);
         try {
             const purchaseData = await initiatePurchase(id);
             setInterestSent(true);
@@ -124,6 +126,8 @@ const ItemDetailPage = ({ isLoggedIn, onAuthRequired }) => {
             const errorMessage = err.response?.data?.message || err.message || 'Failed to send interest.';
             setToast({ show: true, message: `Error: ${errorMessage}` });
             setTimeout(() => setToast({ show: false, message: "" }), 3000);
+        } finally {
+            setContactLoading(false);
         }
     };
 
@@ -307,9 +311,17 @@ const ItemDetailPage = ({ isLoggedIn, onAuthRequired }) => {
                                     ) : !interestSent ? (
                                         <button
                                             onClick={handleSendInterest}
-                                            className="w-full bg-brand-primary text-brand-dark font-black text-xl py-5 rounded-3xl hover:bg-emerald-400 transition-all shadow-xl shadow-brand-primary/20 flex items-center justify-center gap-3 active:scale-[0.98]"
+                                            disabled={contactLoading}
+                                            className="w-full bg-brand-primary text-brand-dark font-black text-xl py-5 rounded-3xl hover:bg-emerald-400 transition-all shadow-xl shadow-brand-primary/20 flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
                                         >
-                                            {isLoggedIn ? "I'm Interested - Notify Seller" : "Sign in to Buy"}
+                                            {contactLoading ? (
+                                                <div className="flex items-center gap-3">
+                                                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-brand-dark"></div>
+                                                    <span>Connecting...</span>
+                                                </div>
+                                            ) : (
+                                                isLoggedIn ? "I'm Interested - Notify Seller" : "Sign in to Buy"
+                                            )}
                                         </button>
                                     ) : (
                                         <div className="space-y-4">
