@@ -39,7 +39,7 @@ const MyListingsPage = () => {
                 setLoading(false);
             }
         };
-        fetchMyListings();
+        fetchListings();
     }, []);
 
     const activeCount = listings.filter(item => item.status === "AVAILABLE").length;
@@ -238,7 +238,7 @@ const MyListingsPage = () => {
                                                     <Pencil className="h-4 w-4 lg:h-5 lg:w-5" />
                                                 </Link>
                                                 <button
-                                                    onClick={() => deleteListing(item.id)}
+                                                    onClick={() => handleDelete(item.id)}
                                                     className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-red-500 hover:bg-red-500/10 transition-all flex items-center justify-center" title="Delete Listing"
                                                 >
                                                     <Trash2 className="h-5 w-5" />

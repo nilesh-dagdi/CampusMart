@@ -13,8 +13,10 @@ export const getWishlist = async (req, res) => {
             }
         });
 
-        // Map to return just the item details as expected by frontend
-        const items = wishlistItems.map(w => w.item);
+        // Map to return just the item details as expected by frontend, filtering out any missing items
+        const items = wishlistItems
+            .filter(w => w.item !== null)
+            .map(w => w.item);
 
         res.json(items);
     } catch (err) {

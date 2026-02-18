@@ -54,7 +54,7 @@ model WishlistItem {
   itemId    String
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
-  item      Item     @relation(fields: [itemId], references: [id])
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
   @@unique([userId, itemId])
   @@index([userId])
@@ -93,7 +93,7 @@ model Message {
   content    String
   read       Boolean  @default(false)
   createdAt  DateTime @default(now())
-  item       Item     @relation(fields: [itemId], references: [id])
+  item       Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
   receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
   sender     User     @relation("SentMessages", fields: [senderId], references: [id])
 }
@@ -103,5 +103,5 @@ model ItemImage {
   itemId    String
   url       String
   createdAt DateTime @default(now())
-  item      Item     @relation(fields: [itemId], references: [id])
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
 }
