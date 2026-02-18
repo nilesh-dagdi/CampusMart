@@ -19,6 +19,7 @@ const WishlistPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [undoItem, setUndoItem] = useState(null);
+    const [removingIds, setRemovingIds] = useState(new Set());
 
     useEffect(() => {
         const fetchWishlist = async () => {
@@ -47,7 +48,10 @@ const WishlistPage = () => {
     }, []);
 
     const removeItem = async (id) => {
+        if (removingIds.has(id)) return;
         const itemToRemove = wishlist.find(item => item.id === id);
+
+        setRemovingIds(prev => new Set(prev).add(id));
         try {
             await removeFromWishlist(id);
             setUndoItem(itemToRemove);
@@ -57,6 +61,12 @@ const WishlistPage = () => {
             setTimeout(() => setUndoItem(null), 4000);
         } catch (err) {
             console.error('Remove item error:', err);
+        } finally {
+            setRemovingIds(prev => {
+                const next = new Set(prev);
+                next.delete(id);
+                return next;
+            });
         }
     };
 
@@ -176,9 +186,14 @@ const WishlistPage = () => {
                                     {/* Unlike Button */}
                                     <button
                                         onClick={() => removeItem(item.id)}
-                                        className="absolute top-3 right-3 h-10 w-10 bg-brand-dark/80 backdrop-blur-md rounded-2xl flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all border border-white/10 shadow-xl"
+                                        disabled={removingIds.has(item.id)}
+                                        className="absolute top-3 right-3 h-10 w-10 bg-brand-dark/80 backdrop-blur-md rounded-2xl flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all border border-white/10 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        <Heart className="h-5 w-5 fill-current" />
+                                        {removingIds.has(item.id) ? (
+                                            <div className="h-5 w-5 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin"></div>
+                                        ) : (
+                                            <Heart className="h-5 w-5 fill-current" />
+                                        )}
                                     </button>
                                 </div>
 

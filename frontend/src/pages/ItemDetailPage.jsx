@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { getItemById, deleteItem } from '../api/items';
 import { initiatePurchase } from '../api/purchases';
+import { getWishlist, addToWishlist, removeFromWishlist } from '../api/wishlist';
 
 const ItemDetailPage = ({ isLoggedIn, onAuthRequired }) => {
     const { id } = useParams();
@@ -35,12 +36,17 @@ const ItemDetailPage = ({ isLoggedIn, onAuthRequired }) => {
     const [showLoginMsg, setShowLoginMsg] = useState(false);
     const [interestSent, setInterestSent] = useState(false);
     const [contactLoading, setContactLoading] = useState(false);
+    const [wishlistLoading, setWishlistLoading] = useState(false);
 
     useEffect(() => {
-        const fetchItem = async () => {
+        const fetchData = async () => {
             setLoading(true);
             try {
-                const data = await getItemById(id);
+                const [data, wishlistData] = await Promise.all([
+                    getItemById(id),
+                    isLoggedIn ? getWishlist().catch(() => []) : Promise.resolve([])
+                ]);
+
                 // Get current user to check ownership
                 const user = JSON.parse(localStorage.getItem('user') || '{}');
                 const isOwner = user.id === data.sellerId;
@@ -57,15 +63,16 @@ const ItemDetailPage = ({ isLoggedIn, onAuthRequired }) => {
                     ]
                 };
                 setItem(transformedItem);
+                setIsLiked(wishlistData.some(w => w.id === id));
             } catch (err) {
-                console.error('Fetch item error:', err);
+                console.error('Fetch data error:', err);
                 setError('Failed to load item details.');
             } finally {
                 setLoading(false);
             }
         };
-        fetchItem();
-    }, [id]);
+        fetchData();
+    }, [id, isLoggedIn]);
 
     const formatTime = (dateString) => {
         const date = new Date(dateString);
@@ -79,15 +86,31 @@ const ItemDetailPage = ({ isLoggedIn, onAuthRequired }) => {
 
     const handleBack = () => navigate(-1);
 
-    const toggleLike = () => {
+    const toggleLike = async () => {
         if (!isLoggedIn) {
             onAuthRequired ? onAuthRequired() : setShowLoginMsg(true);
             return;
         }
-        setIsLiked(!isLiked);
-        if (!isLiked) {
-            setToast({ show: true, message: "Saved to Wishlist!" });
+        if (wishlistLoading) return;
+
+        setWishlistLoading(true);
+        try {
+            if (isLiked) {
+                await removeFromWishlist(id);
+                setIsLiked(false);
+                setToast({ show: true, message: "Removed from Wishlist" });
+            } else {
+                await addToWishlist(id);
+                setIsLiked(true);
+                setToast({ show: true, message: "Saved to Wishlist!" });
+            }
             setTimeout(() => setToast({ show: false, message: "" }), 2000);
+        } catch (err) {
+            console.error('Toggle wishlist error:', err);
+            setToast({ show: true, message: "Failed to update wishlist" });
+            setTimeout(() => setToast({ show: false, message: "" }), 3000);
+        } finally {
+            setWishlistLoading(false);
         }
     };
 
@@ -229,9 +252,14 @@ const ItemDetailPage = ({ isLoggedIn, onAuthRequired }) => {
                                 {/* Wishlist Overlay */}
                                 <button
                                     onClick={toggleLike}
-                                    className={`absolute top-6 right-6 h-14 w-14 rounded-3xl backdrop-blur-md border flex items-center justify-center transition-all shadow-2xl pulse-glow ${isLiked ? 'bg-red-500 border-red-400 text-white' : 'bg-brand-dark/80 border-white/10 text-gray-400 hover:text-white'}`}
+                                    disabled={wishlistLoading}
+                                    className={`absolute top-6 right-6 h-14 w-14 rounded-3xl backdrop-blur-md border flex items-center justify-center transition-all shadow-2xl pulse-glow ${isLiked ? 'bg-red-500 border-red-400 text-white' : 'bg-brand-dark/80 border-white/10 text-gray-400 hover:text-white'} ${wishlistLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
-                                    <Heart className={`h-6 w-6 ${isLiked ? 'fill-current' : ''}`} />
+                                    {wishlistLoading ? (
+                                        <div className="h-6 w-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    ) : (
+                                        <Heart className={`h-6 w-6 ${isLiked ? 'fill-current' : ''}`} />
+                                    )}
                                 </button>
                             </div>
 

@@ -38,6 +38,7 @@ const BrowsePage = ({ isLoggedIn, onAuthRequired }) => {
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [sortBy, setSortBy] = useState("Newest");
     const [wishlistIds, setWishlistIds] = useState(new Set());
+    const [wishlistLoadingIds, setWishlistLoadingIds] = useState(new Set());
     const [showLoginMsg, setShowLoginMsg] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -74,6 +75,9 @@ const BrowsePage = ({ isLoggedIn, onAuthRequired }) => {
             onAuthRequired();
             return;
         }
+        if (wishlistLoadingIds.has(productId)) return;
+
+        setWishlistLoadingIds(prev => new Set(prev).add(productId));
         try {
             if (wishlistIds.has(productId)) {
                 await removeFromWishlist(productId);
@@ -88,6 +92,12 @@ const BrowsePage = ({ isLoggedIn, onAuthRequired }) => {
             }
         } catch (err) {
             console.error('Toggle wishlist error:', err);
+        } finally {
+            setWishlistLoadingIds(prev => {
+                const next = new Set(prev);
+                next.delete(productId);
+                return next;
+            });
         }
     };
 
@@ -291,9 +301,14 @@ const BrowsePage = ({ isLoggedIn, onAuthRequired }) => {
                                             {/* Save Button */}
                                             <button
                                                 onClick={() => toggleWishlist(product.id)}
-                                                className={`absolute top-2 lg:top-4 right-2 lg:right-4 h-8 w-8 lg:h-10 lg:w-10 bg-brand-dark/80 backdrop-blur-md rounded-lg lg:rounded-xl flex items-center justify-center transition-colors border border-white/10 ${wishlistIds.has(product.id) ? 'text-red-500' : 'text-white hover:text-red-400'}`}
+                                                disabled={wishlistLoadingIds.has(product.id)}
+                                                className={`absolute top-2 lg:top-4 right-2 lg:right-4 h-8 w-8 lg:h-10 lg:w-10 bg-brand-dark/80 backdrop-blur-md rounded-lg lg:rounded-xl flex items-center justify-center transition-all border border-white/10 ${wishlistIds.has(product.id) ? 'text-red-500' : 'text-white hover:text-red-400'} ${wishlistLoadingIds.has(product.id) ? 'opacity-50 cursor-not-allowed' : ''}`}
                                             >
-                                                <Heart className={`h-4 w-4 lg:h-5 lg:w-5 ${wishlistIds.has(product.id) ? 'fill-current' : ''}`} />
+                                                {wishlistLoadingIds.has(product.id) ? (
+                                                    <div className="h-4 w-4 lg:h-5 lg:w-5 border-2 border-brand-primary/30 border-t-brand-primary rounded-full animate-spin"></div>
+                                                ) : (
+                                                    <Heart className={`h-4 w-4 lg:h-5 lg:w-5 ${wishlistIds.has(product.id) ? 'fill-current' : ''}`} />
+                                                )}
                                             </button>
                                         </div>
 
