@@ -25,6 +25,12 @@ const WishlistPage = () => {
             setLoading(true);
             setError(''); // Clear any previous errors
             try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    setError('Please log in to view your wishlist.');
+                    setLoading(false);
+                    return;
+                }
                 const data = await getWishlist();
                 setWishlist(data);
             } catch (err) {

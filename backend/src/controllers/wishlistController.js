@@ -5,6 +5,14 @@ export const getWishlist = async (req, res) => {
     try {
         const userId = req.user.id;
 
+        // Optional: Clean up orphaned wishlist items once to fix existing data
+        // This is safe because we already added Cascade Delete for future items
+        await prisma.wishlistItem.deleteMany({
+            where: {
+                item: null
+            }
+        });
+
         // Fetch wishlist items with related item details
         const wishlistItems = await prisma.wishlistItem.findMany({
             where: { userId },
